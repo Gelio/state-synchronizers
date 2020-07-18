@@ -3,7 +3,9 @@
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
+    "declaration": true,
+    "outDir": "dist"
   },
   "include": ["src"]
 }
