@@ -5,13 +5,20 @@ export function getTopologicalSorting<V extends number | string | symbol = any>(
   const visited = new Set<V>();
 
   const topologicallySortedVertices: V[] = [];
+  let currentPath: V[] = [];
 
   const dfs = (vertex: V) => {
-    // TODO: detect loops in the graph
+    if (currentPath.includes(vertex)) {
+      const cycle = `${currentPath.join('->')}->${vertex}`;
+
+      throw new Error(`Cycle detected: ${cycle}`);
+    }
+
     if (visited.has(vertex)) {
       return;
     }
 
+    currentPath.push(vertex);
     visited.add(vertex);
 
     if (edges[vertex]) {
@@ -19,9 +26,14 @@ export function getTopologicalSorting<V extends number | string | symbol = any>(
     }
 
     topologicallySortedVertices.unshift(vertex);
+    currentPath.pop();
   };
 
-  vertices.forEach(dfs);
+  vertices.forEach((vertex) => {
+    currentPath = [];
+
+    dfs(vertex);
+  });
 
   return topologicallySortedVertices;
 }

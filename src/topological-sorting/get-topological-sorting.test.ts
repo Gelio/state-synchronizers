@@ -23,8 +23,7 @@ describe('getTopologicalSorting', () => {
   describe.each(topologicalSortingScenarios)(
     'should return a topological sorting for',
     ({ edges, expectedResult, description }) => {
-      // eslint-disable-next-line jest/valid-title
-      it(description, () => {
+      it(`${description}`, () => {
         expect.hasAssertions();
 
         const result = getTopologicalSorting(edges);
@@ -54,29 +53,41 @@ describe('getTopologicalSorting', () => {
     expect(result.indexOf('bar')).toBeLessThan(result.indexOf('baz'));
   });
 
-  it('should ignore vertices connected to themselves', () => {
-    expect.hasAssertions();
+  interface ErrorScenario {
+    description: string;
+    edges: Record<string, string[]>;
+    expectedErrorMessage: string;
+  }
 
-    const edges = {
-      a: ['a', 'b'],
-      b: ['c'],
-    };
+  const errorScenarios: ErrorScenario[] = [
+    {
+      description: 'a vertex connected to itself',
+      edges: {
+        a: ['a', 'b'],
+        b: ['c'],
+      },
+      expectedErrorMessage: 'Cycle detected: a->a',
+    },
+    {
+      description: 'a vertex connected to itself',
+      edges: {
+        a: ['b'],
+        b: ['a'],
+      },
+      expectedErrorMessage: 'Cycle detected: a->b->a',
+    },
+  ];
 
-    const result = getTopologicalSorting(edges);
+  describe.each(errorScenarios)(
+    'should throw an error when there is',
+    ({ description, edges, expectedErrorMessage }) => {
+      it(`${description}`, () => {
+        expect.hasAssertions();
 
-    expect(result).toStrictEqual(['a', 'b', 'c']);
-  });
-
-  it('should throw an error when there is a cycle in the graph', () => {
-    expect.hasAssertions();
-
-    const edges = {
-      a: ['b'],
-      b: ['a'],
-    };
-
-    expect(() => getTopologicalSorting(edges)).toThrow(
-      'Cycle detected: a->b->a',
-    );
-  });
+        expect(() => getTopologicalSorting(edges)).toThrow(
+          expectedErrorMessage,
+        );
+      });
+    },
+  );
 });
