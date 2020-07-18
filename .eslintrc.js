@@ -2,8 +2,14 @@ module.exports = {
   env: {
     es2020: true,
     node: true,
+    jest: true,
   },
-  extends: ['standard', 'prettier', 'prettier/@typescript-eslint'],
+  extends: [
+    'standard',
+    'prettier',
+    'prettier/@typescript-eslint',
+    'plugin:jest/all',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 11,
