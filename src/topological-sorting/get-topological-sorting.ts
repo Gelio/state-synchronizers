@@ -1,5 +1,5 @@
 export function getTopologicalSorting<V extends number | string | symbol = any>(
-  edges: Record<V, V[]>
+  edges: Record<V, V[]>,
 ): V[] {
   const vertices = Object.keys(edges) as V[];
   const visited = new Set<V>();

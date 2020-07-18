@@ -1,8 +1,8 @@
-import { StateSynchronizer, StateUpdater } from "./types";
+import { StateSynchronizer, StateUpdater } from './types';
 
 export const createSynchronizedStateUpdater = <S>(
   stateSynchronizer: StateSynchronizer<S>,
-  initialState: S
+  initialState: S,
 ): StateUpdater<S> => {
   let previousState: S = initialState;
 

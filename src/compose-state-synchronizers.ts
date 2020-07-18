@@ -1,11 +1,11 @@
-import { ComposableStateSynchronizer, StateSynchronizer } from "./types";
-import { getTopologicalSorting } from "./topological-sorting";
+import { ComposableStateSynchronizer, StateSynchronizer } from './types';
+import { getTopologicalSorting } from './topological-sorting';
 
 export const composeStateSynchronizers = <
   S,
   K extends string | symbol | number
 >(
-  stateSynchronizers: ComposableStateSynchronizer<S, K>[]
+  stateSynchronizers: ComposableStateSynchronizer<S, K>[],
 ): StateSynchronizer<S> => {
   const edges: Record<K, K[]> = {} as any;
   const synchronizersForState: Record<K, StateSynchronizer<S>[]> = {} as any;
@@ -26,7 +26,7 @@ export const composeStateSynchronizers = <
   });
 
   const orderOfSynchronizers = getTopologicalSorting(edges).filter(
-    (stateKey) => !!synchronizersForState[stateKey]
+    (stateKey) => !!synchronizersForState[stateKey],
   );
 
   return (state, previousState) => {
@@ -34,7 +34,7 @@ export const composeStateSynchronizers = <
 
     orderOfSynchronizers.forEach((stateKey) => {
       synchronizersForState[stateKey].forEach(
-        (synchronizer) => (lastState = synchronizer(lastState, previousState))
+        (synchronizer) => (lastState = synchronizer(lastState, previousState)),
       );
     });
 
