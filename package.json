@@ -9,7 +9,8 @@
     "build:watch": "tsc -w",
     "lint": "eslint \"src/**/\"",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
