@@ -53,4 +53,30 @@ describe('getTopologicalSorting', () => {
     expect(result.indexOf('foo')).toBeLessThan(result.indexOf('bar'));
     expect(result.indexOf('bar')).toBeLessThan(result.indexOf('baz'));
   });
+
+  it('should ignore vertices connected to themselves', () => {
+    expect.hasAssertions();
+
+    const edges = {
+      a: ['a', 'b'],
+      b: ['c'],
+    };
+
+    const result = getTopologicalSorting(edges);
+
+    expect(result).toStrictEqual(['a', 'b', 'c']);
+  });
+
+  it('should throw an error when there is a cycle in the graph', () => {
+    expect.hasAssertions();
+
+    const edges = {
+      a: ['b'],
+      b: ['a'],
+    };
+
+    expect(() => getTopologicalSorting(edges)).toThrow(
+      'Cycle detected: a->b->a',
+    );
+  });
 });
