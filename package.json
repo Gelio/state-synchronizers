@@ -28,7 +28,7 @@
     "redux"
   ],
   "author": "Grzegorz Rozdzialik <voreny.gelio@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Gelio/state-synchronizers/issues"
   },
