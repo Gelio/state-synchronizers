@@ -1,5 +1,9 @@
 import { StateSynchronizer, StateUpdater } from './types';
 
+/**
+ * @returns A state updater that runs the state synchronizer when the state changed. Caches the
+ * previous state internally.
+ */
 export const createSynchronizedStateUpdater = <S>(
   stateSynchronizer: StateSynchronizer<S>,
   initialState: S,
