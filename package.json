@@ -9,7 +9,9 @@
     "build:watch": "tsc -w",
     "lint": "eslint \"src/**/\"",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "npm run test -- --watch",
+    "check-types": "tsc --noEmit",
+    "check-types:watch": "npm run check-types -- -w",
     "prepublish": "npm run build"
   },
   "repository": {
