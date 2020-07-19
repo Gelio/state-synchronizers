@@ -1,21 +1,37 @@
 import { ComposableStateSynchronizer, StateSynchronizer } from './types';
 import { getTopologicalSorting } from './topological-sorting';
 
-export const composeStateSynchronizers = <
-  S,
-  K extends string | symbol | number
->(
+export const composeStateSynchronizers = <S, K extends keyof any>(
   stateSynchronizers: ComposableStateSynchronizer<S, K>[],
 ): StateSynchronizer<S> => {
+  const edges = getEdges(stateSynchronizers);
+  const synchronizersForState = getSynchronizersForState(stateSynchronizers);
+
+  const orderOfSynchronizers = getTopologicalSorting(edges).filter(
+    (stateKey) => !!synchronizersForState[stateKey],
+  );
+
+  const orderedSynchronizers = orderOfSynchronizers.flatMap(
+    (stateKey) => synchronizersForState[stateKey],
+  );
+
+  return (state, previousState) => {
+    let lastState = state;
+
+    orderedSynchronizers.forEach(
+      (synchronizer) => (lastState = synchronizer(lastState, previousState)),
+    );
+
+    return lastState;
+  };
+};
+
+const getEdges = <K extends keyof any>(
+  stateSynchronizers: ComposableStateSynchronizer<any, K>[],
+) => {
   const edges: Record<K, K[]> = {} as any;
-  const synchronizersForState: Record<K, StateSynchronizer<S>[]> = {} as any;
 
-  stateSynchronizers.forEach(({ stateKey, synchronizer, dependenciesKeys }) => {
-    if (!synchronizersForState[stateKey]) {
-      synchronizersForState[stateKey] = [];
-    }
-    synchronizersForState[stateKey].push(synchronizer);
-
+  stateSynchronizers.forEach(({ stateKey, dependenciesKeys }) => {
     dependenciesKeys.forEach((dependencyKey) => {
       if (!edges[dependencyKey]) {
         edges[dependencyKey] = [];
@@ -25,19 +41,20 @@ export const composeStateSynchronizers = <
     });
   });
 
-  const orderOfSynchronizers = getTopologicalSorting(edges).filter(
-    (stateKey) => !!synchronizersForState[stateKey],
-  );
+  return edges;
+};
 
-  return (state, previousState) => {
-    let lastState = state;
+const getSynchronizersForState = <S, K extends keyof any>(
+  stateSynchronizers: ComposableStateSynchronizer<S, K>[],
+) => {
+  const synchronizersForState: Record<K, StateSynchronizer<S>[]> = {} as any;
 
-    orderOfSynchronizers.forEach((stateKey) => {
-      synchronizersForState[stateKey].forEach(
-        (synchronizer) => (lastState = synchronizer(lastState, previousState)),
-      );
-    });
+  stateSynchronizers.forEach(({ stateKey, synchronizer }) => {
+    if (!synchronizersForState[stateKey]) {
+      synchronizersForState[stateKey] = [];
+    }
+    synchronizersForState[stateKey].push(synchronizer);
+  });
 
-    return lastState;
-  };
+  return synchronizersForState;
 };
