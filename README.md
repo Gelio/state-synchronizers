@@ -277,6 +277,75 @@ It is written in TypeScript.
 
 ## API
 
+### Terminology
+
+#### State updater
+
+State updater is a function that matches the following type:
+
+```ts
+type StateUpdater<S> = (state: S) => S;
+```
+
+#### State synchronizer
+
+State synchronizer is a function that matches the following type:
+
+```ts
+type StateSynchronizer<S> = (state: S, previousState: Readonly<S>) => S;
+```
+
+### `createStateSynchronizer`
+
+`createStateSynchronizer(updater, dependenciesKeys)` takes a state updater and an array
+of property names. The returned state synchronizer invokes `updater` when any dependency
+changes. `updater` is not executed when dependencies remain the same.
+
+### `createSynchronizedStateUpdater`
+
+`createSynchronizedStateUpdater(stateSynchronizer, initialState)` returns a state updater
+that runs the state synchronizer when the state changed. It caches the previous state internally to
+pass it to `stateSynchronizer`.
+
+### `ComposableStateSynchronizer`
+
+`ComposableStateSynchronizer` is an object that matches the following interface:
+
+```ts
+interface ComposableStateSynchronizer<S, K extends keyof any = keyof S> {
+  /**
+   * The name of a piece of state that the synchronizer updates
+   */
+  stateKey: K;
+  /**
+   * Names of pieces of state that the synchronizer depends on
+   */
+  dependenciesKeys: K[];
+  synchronizer: StateSynchronizer<S>;
+}
+```
+
+`ComposableStateSynchronizer`s can be combined by `composeStateSynchronizers`.
+
+### `createComposableStateSynchronizer`
+
+`createComposableStateSynchronizer(updater, stateKey, dependenciesKeys)` is a utility function
+for creating `ComposableStateSynchronizer` for plain JS objects.
+
+### `composeStateSynchronizers`
+
+`composeStateSynchronizers(composableStateSynchronizers)` takes an array of
+`ComposableStateSynchronizer` and produces a state synchronizer that runs the state synchronizers in
+topological order - runs the synchronizers for children state before executing the synchronizers for
+parent state.
+
+### `withStateSynchronization`
+
+`withStateSynchronization(stateUpdater)(functionToWrap)` wraps an existing function (e.g. a redux reducer) with a state updater.
+
+`stateUpdater` can be either a raw state updater, or one produced by
+`createSynchronizedStateUpdater`.
+
 ## Contributing
 
 The project is open for contributions. Feel free to create issues and PRs 🚀
