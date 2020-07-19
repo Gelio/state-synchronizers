@@ -13,7 +13,7 @@
     "test:coverage": "npm run test -- --coverage",
     "check-types": "tsc --noEmit",
     "check-types:watch": "npm run check-types -- -w",
-    "prepublish": "npm run build"
+    "prepublish": "rm dist -rf && npm run build"
   },
   "repository": {
     "type": "git",
