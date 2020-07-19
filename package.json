@@ -10,6 +10,7 @@
     "lint": "eslint \"src/**/\"",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
+    "test:coverage": "npm run test -- --coverage",
     "check-types": "tsc --noEmit",
     "check-types:watch": "npm run check-types -- -w",
     "prepublish": "npm run build"
